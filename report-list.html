@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en" dir="rtl">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <!-- Bootstrap CSS -->
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <!-- <link rel="stylesheet" href="css/bootstrap.min.css"> -->
+  <link rel="stylesheet" href="css/login.css">
+  <link rel="stylesheet" href="css/global.css">
+  <!-- w3school CSS icon -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <!-- google CSS icon -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <title>ثبت‌نام</title>
+</head>
+
+<body class="bg-color" onload="setup()">
+  <div class="container text-dark p-5">
+    <div class="text-center">
+      <button class="btn btn-dark m-1" onclick="window.location.href = 'index.html'; setJsonObj('currentUser', null)" type="button" name="button">خروج از حساب کاربری</button>
+      <button class="btn btn-primary m-1" onclick="window.location.href = 'report.html'" type="button" name="button">یک گزارش بنویسید</button>
+    </div>
+    <p class="text-center font-weight-bold h3 py-4">
+      لیست گزارشات
+    </p>
+
+    <div id="report-list-users" class="text-center w-lg-100 w-md-100 w-sm-atuo">
+      <filter-input></filter-input>
+      <report-content v-for="post in posts" :post="post"></report-content>
+      <button class="btn btn-primary m-1" onclick="window.location.href = 'report.html'" type="button" name="button">یک گزارش بنویسید</button>
+    </div>
+    <!-- ************************************************************* -->
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <!-- <script src="js/jquery-3.3.1.js"></script> -->
+    <!-- Optional JavaScript -->
+    <script src="js/app.js"></script>
+    <!-- Vuejs -->
+    <script src="js/vue.js"></script>
+    <!-- moment.js -->
+    <script src="js/moment.js"></script>
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <!-- <script src="js/jquery.slim.min.js"></script>
+    <script src="js/popper.min.js"></script>
+    <script src="js/bootstrap.min.js"></script> -->
+</body>
+<script>
+  var reportsObj = getJsonObj("reports")
+  //select options element
+  Vue.component('filter-input', {
+    data() {
+      return {
+        // showOrNot: false,
+        options: [{
+            value: 'Username'
+          },
+          {
+            value: 'Newest firt'
+          },
+          {
+            value: 'Responsible'
+          },
+        ],
+        selected: '',
+      }
+    },
+    props: ['post'],
+    template: `
+    <div>
+  <select v-model="selected" class="custom-select w-sm-50 w-md-50 w-lg-25">
+    <option value="" disabled>
+      مرتب سازی براساس...
+    </option>
+    <option v-for="option in options" :value="option.value">
+      {{option.value}}
+    </option>
+  </select>
+  <span>{{selected}}</span>
+  </div>
+  `,
+  });
+  // Define a new component called report-content
+  Vue.component('report-content', {
+    methods: {
+      isClosed() {
+        if (this.post.status == 'closed') {
+          alert("this.post.status")
+          for (var i = 0; i < reportsObj.reports.length; i++) {
+            //finding the equal object to update the data of the 'reports' in localstorage
+            if (reportsObj.reports[i] == this.post) {
+              return true
+            }
+          }
+        } else {
+          return false
+        }
+      },
+      isSatisfied(state) {
+        alert("this.post.satisfied= " + state)
+        for (var i = 0; i < reportsObj.reports.length; i++) {
+          //finding the equal object to update the data of the 'reports' in localstorage
+          if (reportsObj.reports[i] == this.post) {
+            this.post.satisfied = (state == '+') ? '+' : '-';
+            //adding and removing (updating) at the same time
+            reportsObj.reports.splice(i, 1, this.post)
+            setJsonObj("reports", reportsObj)
+            break
+          }
+        }
+      }
+    },
+    props: ['post'],
+    template: `
+
+    <div class="row shadow1 m-3">
+    <div class="col-md-3 text-center">
+      <br>
+      <span class="border border-secondary text-secondary rounded p-1">
+        {{post.status}}
+      </span>
+      <br>
+      <div class="mt-3">
+        مسئول: {{post.responsible}}
+      </div>
+        <div v-if="post.status == 'closed' && post.satisfied == ''" class="border border-info p-2 m-3 rounded">
+          <div class="m-1">از این اقدام راضی هستید؟</div>
+          <button @click="isSatisfied('+')" class="btn btn-info m-1" type="button" name="button">بله</button>
+          <button @click="isSatisfied('-')" class="btn btn-danger m-1" type="button" name="button">خیر</button>
+      </div>
+      <div v-else-if="post.status == 'closed' & post.satisfied != ''" class="border border-info p-2 m-3 rounded">
+      <div class="m-1">
+        ممنون از نظر شما
+      </div>
+      </div>
+    </div>
+    <div class="col-md-9 bg-white text-right">
+      <p class="font-weight-bold h5 pt-4 pb-2">
+        {{post.title}}
+      </p>
+      <p class="text-secondary">
+        توسط
+        {{post.email}}
+        در تاریخ
+        {{post.date}}
+      </p>
+      <hr>
+      <p class="">
+        {{post.detail}}
+      </p>
+      </div>
+    </div>`,
+  })
+
+  var vm = new Vue({
+    el: '#report-list-users',
+    data: {
+      posts: [],
+    },
+    created() {
+      var vm = this //this Vue instance
+      for (var i = 0; i < reportsObj['reports'].length; i++) {
+        let object = reportsObj['reports'][i]
+        vm.posts.push(object)
+      }
+    },
+  })
+</script>
+
+</html>
