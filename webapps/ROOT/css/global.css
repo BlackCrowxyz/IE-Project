@@ -1,0 +1,214 @@
+/* CSS Document */
+/*Adding External Fonts*/
+@font-face {
+    font-family: "IRANSans-Light";
+    src: url('../pics/IRANSans-Light.woff2') format('woff2'),
+        url('../pics/IRANSans-Light.woff') format('woff');
+}
+
+* {
+    font-family: "IRANSans-Light";
+}
+
+a {
+    color: #fff;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #fff;
+}
+
+.shadow1 {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+     !important
+}
+
+.bg-color {
+    background-color: #F5F5F5;
+}
+
+.bg-new-green {
+    background-color: #0068D9 !important;
+}
+
+
+.pointer {
+    cursor: pointer !important;
+}
+
+li.nav_item.btn.pointer:hover {
+    background: rgba(96, 157, 219, 0.5);
+}
+.navbar-nav{
+  display: block !important;
+}
+
+/*********** input styles *****************/
+input {
+    width: 90%;
+    outline: none;
+    border: 0;
+    border-bottom: 1px solid #c3c3c3;
+}
+
+input:focus {
+    outline: none;
+    border: 0;
+    border-bottom: 2px solid #00aa0c;
+}
+
+.material-icons.pl-2 {
+    color: #c3c3c3;
+}
+
+/*********** form validation *****************/
+form label {
+    display: inline-block;
+    width: 100px;
+}
+
+form div {
+    margin-bottom: 10px;
+}
+
+.error {
+    color: red;
+}
+
+label.error {
+    display: inline;
+}
+
+/*/////////////////////bootstrap adding methods////////////////////*/
+@media (min-width: 576px) {
+  .w-sm-25 {
+    width: 25% !important;
+  }
+  .w-sm-50 {
+    width: 50% !important;
+  }
+  .w-sm-75 {
+    width: 75% !important;
+  }
+  .w-sm-100 {
+    width: 100% !important;
+  }
+  .w-sm-auto {
+    width: auto !important;
+  }
+  .h-sm-25 {
+    height: 25% !important;
+  }
+  .h-sm-50 {
+    height: 50% !important;
+  }
+  .h-sm-75 {
+    height: 75% !important;
+  }
+  .h-sm-100 {
+    height: 100% !important;
+  }
+  .h-sm-auto {
+    height: auto !important;
+  }
+}
+
+@media (min-width: 768px) {
+  .w-md-25 {
+    width: 25% !important;
+  }
+  .w-md-50 {
+    width: 50% !important;
+  }
+  .w-md-75 {
+    width: 75% !important;
+  }
+  .w-md-100 {
+    width: 100% !important;
+  }
+  .w-md-auto {
+    width: auto !important;
+  }
+  .h-md-25 {
+    height: 25% !important;
+  }
+  .h-md-50 {
+    height: 50% !important;
+  }
+  .h-md-75 {
+    height: 75% !important;
+  }
+  .h-md-100 {
+    height: 100% !important;
+  }
+  .h-md-auto {
+    height: auto !important;
+  }
+}
+
+@media (min-width: 992px) {
+  .w-lg-25 {
+    width: 25% !important;
+  }
+  .w-lg-50 {
+    width: 50% !important;
+  }
+  .w-lg-75 {
+    width: 75% !important;
+  }
+  .w-lg-100 {
+    width: 100% !important;
+  }
+  .w-lg-auto {
+    width: auto !important;
+  }
+  .h-lg-25 {
+    height: 25% !important;
+  }
+  .h-lg-50 {
+    height: 50% !important;
+  }
+  .h-lg-75 {
+    height: 75% !important;
+  }
+  .h-lg-100 {
+    height: 100% !important;
+  }
+  .h-lg-auto {
+    height: auto !important;
+  }
+}
+
+@media (min-width: 1200px) {
+  .w-xl-25 {
+    width: 25% !important;
+  }
+  .w-xl-50 {
+    width: 50% !important;
+  }
+  .w-xl-75 {
+    width: 75% !important;
+  }
+  .w-xl-100 {
+    width: 100% !important;
+  }
+  .w-xl-auto {
+    width: auto !important;
+  }
+  .h-xl-25 {
+    height: 25% !important;
+  }
+  .h-xl-50 {
+    height: 50% !important;
+  }
+  .h-xl-75 {
+    height: 75% !important;
+  }
+  .h-xl-100 {
+    height: 100% !important;
+  }
+  .h-xl-auto {
+    height: auto !important;
+  }
+}
