@@ -25,7 +25,7 @@ This website is built to help students write reports regarding issues of their f
 
 - Watch in 
 
-  [aparat.ir]: 	"پروژه درس مهندسی نرم‌افزار"
+  [aparat.ir]: https://www.aparat.com/v/oGzuD	"پروژه درس مهندسی نرم‌افزار"
 
   
 
