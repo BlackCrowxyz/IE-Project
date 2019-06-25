@@ -6,13 +6,13 @@
     </p>
     <p class="text-secondary">
       توسط
-      {{post.email}}
+      {{post.from_username}}
       در تاریخ
-      {{post.date}}
+      {{post.lastUpdate}}
     </p>
 
     <div class="mt-3 text-secondary">
-      مسؤل: {{post.responsible}}
+      مسؤل: {{post.to_username}}
     </div>
     <br />
     <span class="border border-secondary text-secondary rounded p-1">
@@ -49,7 +49,7 @@
     <div class="text-right py-1 pt-4">
       درباره‌ی موضوع مطرح شده توضیحات خود را بنویسید
     </div>
-    <textarea v-model="newDetail" class="form-control" rows="3" id="report-detail" placeholder="جزیئات کار را اینجا بنویسید" required></textarea>
+    <textarea v-model="newOtherDescription" class="form-control" rows="3" id="report-detail" placeholder="جزیئات کار را اینجا بنویسید" required></textarea>
     <br>
     <button @click="reportChecked" class="btn btn-success mt-1" type="button" name="button">تأیید</button></button>
     <button class="btn btn-danger mt-1" @click="showOrNot = !showOrNot" type="button" name="button">رد اقدام</button>
@@ -83,39 +83,56 @@ export default {
       // selected: '',
       newResponsible: '',
       newStatus: '',
-      newDetail: '',
+      newOtherDescription: '',
     }
   },
   props: ['post'],
   methods: {
+    axiosReq(url) {
+      return this.$axios
+        .post(url, {
+          "token": localStorage.getItem("token")
+        })
+        .then(response => response.data)
+        .catch(error => console.log(error))
+    },
     reportChecked() {
-      this.showOrNot = !this.showOrNot;
-      this.post.responsible = (this.newResponsible == "") ? this.post.responsible : this.newResponsible
-      this.post.status = (this.newStatus == "") ? this.post.status : this.newStatus
-      this.post.newDetail = this.newDetail
 
-      //adding and removing (updating) at the same time
-      // this.$parent.posts.splice(this.$vnode.key, 1, this.post)
-      // this.$parent.posts.splice(this.post.id, 1, this.post)
+      this.axiosReq("http://localhost:8080/contacts/rest/myservice/getAllPosts").then(data => {
+        let msg = JSON.parse(JSON.stringify(data))
+        if (typeof msg !== 'object' && !msg.success) {
+          alert(msg.success)
+          console.log(msg.success);
+        } else {
+          this.$msg.data.splice()
 
-      for (var i = 0; i < this.$parent.$parent.posts.reports.length; i++) {
-        // console.log("-0 for loop: my email= " + this.$parent.currentUser.email);
-        if (this.$parent.$parent.posts.reports[i].id == this.post.id) {
-          // alert(this.$parent.$parent.posts.reports[i].id);
-          // alert(this.post.id);
-          this.$parent.$parent.posts.reports[i].responsible =   this.post.responsible;
-          this.$parent.$parent.posts.reports[i].status = this.post.status;
-          this.$parent.$parent.posts.reports[i].newDetail = this.post.newDetail;
-          this.$parent.$parent.setPostsChange();
-          break;
+          this.showOrNot = !this.showOrNot;
+          //TODO: "newResponsible" should be an 'id' of onother prof
+          this.post.to_username = (this.newResponsible == "") ? this.post.to_username : this.newResponsible
+          this.post.status = (this.newStatus == "") ? this.post.status : this.newStatus
+          this.post.otherDescriptions = this.newOtherDescription
+
+          //adding and removing (updating) at the same time
+          this.$parent.posts.splice(this.$vnode.key, 1, this.post)
+          // this.$parent.posts.splice(this.post.id, 1, this.post)
+          this.$parent.(this.post.post_id)
+
+          // for (var i = 0; i < this.$parent.$parent.posts.length; i++) {
+          //   // console.log("-0 for loop: my email= " + this.$parent.currentUser.email);
+          //   if (this.$parent.$parent.posts.reports[i].id == this.post.id) {
+          //     // alert(this.$parent.$parent.posts.reports[i].id);
+          //     // alert(this.post.id);
+          //     this.$parent.$parent.posts.reports[i].responsible = this.post.responsible;
+          //     this.$parent.$parent.posts.reports[i].status = this.post.status;
+          //     this.$parent.$parent.posts.reports[i].newOtherDescription = this.post.newOtherDescription;
+          //     this.$parent.$parent.setPostsChange();
+          //     break;
+          //   }
+          // }
+
         }
-      }
-
+      })
     }
   },
 }
 </script>
-
-<style>
-
-</style>

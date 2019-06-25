@@ -10,7 +10,3 @@ export default {
   name: 'footer-component'
 }
 </script>
-
-<style>
-
-</style>
