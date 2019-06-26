@@ -21,7 +21,11 @@ This website is built to help students write reports regarding issues of their f
 
 ### Watch the video:
 
+<<<<<<< HEAD
 - Watch in  https://www.aparat.com/v/BtG65
+=======
+- Watch in https://www.aparat.com/v/BtG65
+>>>>>>> 7a02cbe531595e578dd847dc102e9fbe07ba149e
 
   
 

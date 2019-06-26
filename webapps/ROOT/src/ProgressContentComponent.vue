@@ -98,6 +98,7 @@ export default {
     },
     reportChecked() {
 
+<<<<<<< HEAD
       // this.axiosReq("http://localhost:8080/contacts/rest/myservice/getAllPosts").then(data => {
       //   let msg = JSON.parse(JSON.stringify(data))
       //   if (typeof msg !== 'object' && !msg.success) {
@@ -107,12 +108,22 @@ export default {
       //     // this.$parent.posts=msg.data.splice()
       //     console.log(msg.data.splice());
           console.log(this.$parent.$parent.posts);
+=======
+      this.axiosReq("http://localhost:8080/contacts/rest/myservice/getAllPosts").then(data => {
+        let msg = JSON.parse(JSON.stringify(data))
+        if (typeof msg !== 'object' && !msg.success) {
+          alert(msg.success)
+          console.log(msg.success);
+        } else {
+          this.$msg.data.splice()
+>>>>>>> 7a02cbe531595e578dd847dc102e9fbe07ba149e
 
           this.showOrNot = !this.showOrNot;
           //TODO: "newResponsible" should be an 'id' of onother prof
           this.post.to_username = (this.newResponsible == "") ? this.post.to_username : this.newResponsible
           this.post.status = (this.newStatus == "") ? this.post.status : this.newStatus
           this.post.otherDescriptions = this.newOtherDescription
+<<<<<<< HEAD
 
           //adding and removing (updating) at the same time
           this.$parent.$parent.posts.splice(this.$vnode.key, 1, this.post)
@@ -145,6 +156,29 @@ export default {
           // }
       //   }
       // })
+=======
+
+          //adding and removing (updating) at the same time
+          this.$parent.posts.splice(this.$vnode.key, 1, this.post)
+          // this.$parent.posts.splice(this.post.id, 1, this.post)
+          this.$parent.(this.post.post_id)
+
+          // for (var i = 0; i < this.$parent.$parent.posts.length; i++) {
+          //   // console.log("-0 for loop: my email= " + this.$parent.currentUser.email);
+          //   if (this.$parent.$parent.posts.reports[i].id == this.post.id) {
+          //     // alert(this.$parent.$parent.posts.reports[i].id);
+          //     // alert(this.post.id);
+          //     this.$parent.$parent.posts.reports[i].responsible = this.post.responsible;
+          //     this.$parent.$parent.posts.reports[i].status = this.post.status;
+          //     this.$parent.$parent.posts.reports[i].newOtherDescription = this.post.newOtherDescription;
+          //     this.$parent.$parent.setPostsChange();
+          //     break;
+          //   }
+          // }
+
+        }
+      })
+>>>>>>> 7a02cbe531595e578dd847dc102e9fbe07ba149e
     }
   },
 }

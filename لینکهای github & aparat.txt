@@ -2,4 +2,8 @@ github:
 https://github.com/BlackCrowxyz/IE-Project
 
 aparat:
+<<<<<<< HEAD
 https://www.aparat.com/v/BtG65
+=======
+https://www.aparat.com/v/BtG65
+>>>>>>> 7a02cbe531595e578dd847dc102e9fbe07ba149e
