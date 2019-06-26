@@ -32,7 +32,3 @@ export default {
   name: 'start-component'
 }
 </script>
-
-<style>
-
-</style>

@@ -30,7 +30,7 @@
         <input class="form-control" type="text" v-model="responsible" placeholder="مسؤل را انتخاب کنید..." required>
         <!-- <input class="btn btn-primary mb-4" type="button" value="ثبت مورد" onclick="location.href='report-list.html'"> -->
         <!-- <button type="submit" class="btn btn-primary mt-3 w-50 shadow1">ثبت مورد</button> -->
-        <button @click="setPost" class="btn btn-primary mt-3 w-50 shadow1">ثبت مورد</button>
+        <button @click="sendPost" class="btn btn-primary mt-3 w-50 shadow1">ثبت مورد</button>
       </form>
     </div>
   </div>
@@ -38,7 +38,6 @@
 </template>
 
 <script>
-var reportURL = 'https://api.myjson.com/bins/k49qs';
 export default {
   name: 'report-component',
   data() {
@@ -46,63 +45,47 @@ export default {
       title: '',
       details: '',
       responsible: '',
-      id: 0,
-      posts: '',
     }
   },
-  mounted() {
-    this.getPosts()
-  },
   methods: {
-    setPost() {
-      console.log('ReportComponent > setPost() called');
-      if (this.details == '' ||
-        this.title == '' ||
-        this.responsible == '') {
-        console.log("تمام قسمت‌ها را کامل پر کنید");
-      }
-      //check if the user exists in the database
-      else if (this.$parent.authenticated) {
-        this.id = (this.posts.reports.length - 1)
-        // let jsonStr = `{"reports": []}`;
-        this.getPosts();
-        let obj = this.posts;
-        obj['reports'].push({
-          "id": this.id + 1,
-          "email": this.$parent.currentUser.email,
+    axiosReq(url, obj) {
+      return this.$axios
+        .post(url, obj)
+        .then(response => response.data)
+        .catch(error => console.log(error))
+    },
+    sendPost() { //createPost
+      console.log('ReportComponent > sendPost() called');
+      if (this.details == '' || this.title == '' || this.responsible == '') {
+        alert("تمام قسمت‌ها را کامل پر کنید");
+      } else if (this.$parent.authenticated) {
+        this.axiosReq('http://localhost:8080/contacts/rest/myservice/createPost', {
+          "from_token": localStorage.getItem("token"),
+          "to_id": 2, //TODO: create a select box with vue(this.responsible,)
           "title": this.title,
           "detail": this.details,
-          "responsible": this.responsible,
+          "lastUpdate": "time 2019", //Time of now should go
           "status": "open",
-          "date": new Date(),
-          "satisfied": "",
-          "newDetail": ""
-        });
-        this.$axios
-          .put(reportURL, obj)
-          .then(response => (this.posts = response.data))
-          .catch(error => console.log(error))
-        this.$parent.posts = this.posts
-        //changing the page content to 'welcome'
-        this.$router.replace(`/reports-list`);
+          "satisfied": false
+        }).then(data => {
+          let msg = JSON.parse(JSON.stringify(data))
+          if (typeof msg !== 'object' && !msg.success) {
+            alert(msg.success)
+            console.log(msg.success);
+          } else {
+            this.$parent.posts = msg.data
+            // TODO: is it needed????? //
+            // this.posts = msg.data  //
+            this.$router.replace(`/reports-list`); //changing the page content to 'welcome'
+          }
+        })
         this.title = '';
         this.detail = '';
         this.responsible = '';
       } else {
-        console.log("ابتدا وارد سایت شوید");
+        alert("ابتدا وارد سایت شوید");
       }
-    },
-    getPosts() {
-      console.log('ReportComponent > getPosts() called');
-      this.$axios
-        .get(reportURL)
-        .then(response => (this.posts = response.data))
-        .catch(error => console.log(error))
     },
   },
 }
 </script>
-
-<style>
-
-</style>

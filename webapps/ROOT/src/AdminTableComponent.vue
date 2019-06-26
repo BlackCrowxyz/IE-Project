@@ -16,15 +16,16 @@
             <tr>
               <!-- <th>شماره</th> -->
               <th>بررسی وضعیت</th>
+              <th>حذف</th>
               <th>نام کاربری</th>
               <th>ایمیل</th>
               <th>وضعیت حساب کاربری</th>
               <th>نوع کاربر</th>
+              <th>عملیات</th>
             </tr>
           </thead>
           <tbody>
-            <!-- <tr is="table-content-component" v-for="(user, i) in this.users" :user="user" :key="i"></tr> -->
-            <tr is="table-content-component" v-for="(user, i) in this.$parent.users.users" :user="user" :key="i"></tr>
+            <tr is="table-content-component" v-for="(user, i) in this.$parent.users" :user="user" :key="i"></tr>
           </tbody>
         </table>
       </form>
@@ -39,7 +40,6 @@ export default {
   name: 'admin-table-component',
   data() {
     return {
-      users: [],
       text:'نمایش مسؤلان',
       isAll: false,
     }
@@ -57,12 +57,5 @@ export default {
   components: {
     'table-content-component': TableContentComponent,
   },
-  // created() {
-  //   this.users = this.$parent.users.users
-  // },
-  // beforeDestroy() {
-  //   console.log("AdminTableComponent > beforeDestroy() called");
-  //   this.$parent.users.users = this.users;
-  // },
 }
 </script>

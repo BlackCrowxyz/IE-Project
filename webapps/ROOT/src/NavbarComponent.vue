@@ -48,7 +48,3 @@ export default {
   name: 'navbar-component',
 }
 </script>
-
-<style>
-
-</style>

@@ -25,7 +25,7 @@
             </div>
             <div class="form-check">
               <label class="form-check-labe" for="check1">
-                <input v-model="isStudent" type="checkbox" id="isStudent" class="form-check-input w-50" name="option1" value="student">
+                <input v-model="student" type="checkbox" id="isStudent" class="form-check-input w-50" name="option1" value="student">
                 دانشجو هستم
               </label>
             </div>
@@ -42,7 +42,9 @@
 </template>
 
 <script>
-var usersURL = 'https://api.myjson.com/bins/12ir4k';
+// var usersURL = 'https://api.myjson.com/bins/12ir4k';
+var createUserURL = 'http://localhost:8080/contacts/rest/myservice/createUser';
+
 export default {
   name: 'signup-component',
   data() {
@@ -51,20 +53,25 @@ export default {
       email: '',
       password: '',
       repassword: '',
-      isStudent: false,
-      users: '',
+      student: false,
     }
   },
-  updated() {
-    this.users = this.$parent.users
-  },
-  beforeDestroy() {
-    console.log("SignUpComponent > beforeDestroy() called");
-    this.$parent.users = this.users;
-    // this.$parent.setNewUser();
-  },
   methods: {
+    axiosReq() {
+      return this.$axios
+        .post(createUserURL, {
+          "username": this.username,
+          "email": this.email,
+          "password": this.password,
+          "repassword": this.repassword,
+          "role": ((this.student) ? "student" : "prof"),
+          "active": this.student
+        })
+        .then(response => response.data)
+        .catch(error => console.log(error))
+    },
     addUser() {
+
       let filled = true; //flag for adding new data
       $(".error").remove();
       $(".text-success").remove();
@@ -73,6 +80,9 @@ export default {
       // USERNAME VALIDATION
       if (this.username.length < 1) {
         $('#username').after('<br class=br><span class="error">لطفا این قسمت را پر کنید</span>');
+        filled = false;
+      } else if (this.username.length < 3) {
+        $('#username').after('<br class=br><span class="error">نام کاربری باید بیشتر از دو حرف باشد</span>');
         filled = false;
       } else {
         $('#username').after('<br class=br><span class="text-success">نام معتبر است</span>');
@@ -109,49 +119,30 @@ export default {
       } else {
         $('#password').after('<br class=br><span class="text-success">رمز عبور معتبر است</span>');
       }
-      ///////////storing data//////////
-      //check if the user data already existed
-      let isNewUser = true;
-      for (var i = 0; i < this.users.users.length; i++) {
-        if (this.users.users[i].email == this.email && filled) {
-          alert("این ایمیل قبلا ثبت شده است.")
-          filled = false;
-          isNewUser = false;
-          break;
-        }
-      }
-      //adding new user to database
-      if (filled && isNewUser) {
-        let newUserObj = this.users;
-        newUserObj['users'].push({
-          "id": this.users.users.length,
-          "username": this.username,
-          "email": this.email,
-          "password": this.password,
-          "isStudent": this.isStudent,
-          "isActive": this.isStudent
-        });
 
-        this.$axios
-          .put(usersURL, newUserObj)
-          .then(response => (this.users = response.data))
-          .catch(error => console.log(error))
-
-        this.$parent.users = this.users;
-
-        if (this.isStudent) {
-          this.$parent.authenticated = true;
-          this.$parent.currentUser = newUserObj['users'].pop();
-          this.$router.replace(`/report`);
-        } else {
-          this.$router.replace(`/`);
-          alert('منتظر تایید از طرف مدیریت باشید، تا بعدا از سایت استفاده کنید.')
-        }
-        this.username = '';
-        this.email = '';
-        this.password = '';
-        this.repassword = '';
-        this.isStudent = '';
+      if (filled) {
+        this.axiosReq().then(data => {
+          let msg = JSON.parse(JSON.stringify(data))
+          if (typeof msg !== 'object' && !msg.data.success) {
+            alert("اشکال در ثبت کاربر:\n" + msg.message)
+            console.log("اشکال در ثبت کاربر:\n" + msg.message);
+          } else {
+            this.$parent.currentUser = msg.data;
+            localStorage.setItem("token", msg.data.token); //Saving to local Stroge
+            if (msg.data.role == "student") {
+              this.$router.replace(`/report`);
+              this.$parent.authenticated = true;
+            } else {
+              this.$router.replace(`/`);
+              alert('منتظر تایید از طرف مدیریت باشید، تا بعدا از سایت استفاده کنید.')
+            }
+            this.username = '';
+            this.email = '';
+            this.password = '';
+            this.repassword = '';
+            this.student = '';
+          }
+        })
       }
     },
   },

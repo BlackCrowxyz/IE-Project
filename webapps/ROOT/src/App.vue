@@ -5,9 +5,9 @@
 		to use router
 	-->
   <navbar-component></navbar-component>
-  <div class="text-center h3 pt-4 m-0">
+  <!-- <div class="text-center h3 pt-4 m-0">
     {{this.currentUser.username}}
-  </div>
+  </div> -->
   <router-view @authenticated="setAuthenticated"></router-view>
   <!-- {{users}} -->
   <footer-component></footer-component>
@@ -19,7 +19,9 @@
 import NavbarComponent from './NavbarComponent.vue'
 import FooterComponent from './FooterComponent.vue'
 var reportURL = 'https://api.myjson.com/bins/k49qs';
-var usersURL = 'https://api.myjson.com/bins/12ir4k';
+// var usersURL = 'https://api.myjson.com/bins/12ir4k';
+//var usersURL = 'http://localhost:8080/contacts/rest/myservice/createUser';
+
 export default {
   name: 'app',
   data() {
@@ -37,7 +39,6 @@ export default {
       posts: [],
     }
   },
-
   // beforeCreate() {
   //   // Initailing the JSON file : 'Users'
   //   let jsonStr = `{"users": []}`;
@@ -180,38 +181,80 @@ export default {
   //     .then(response => (this.posts = response.data))
   //     .catch(error => console.log(error))
   // },
-
+  created() {
+    this.getPosts()
+    this.getAllUsers()
+  },
   methods: {
-    setUsers() {
-      this.$axios
-        .put(usersURL, this.users)
-        .then(response => (this.users = response.data))
+    axiosReq(url, obj) {
+      console.log("app >axiosReq called -> " + url + "\n" + obj);
+      return this.$axios
+        .post(url, obj)
+        .then(response => response.data)
         .catch(error => console.log(error))
+    },
+    // sendToken(){
+    //   var token = localStorage.getItem("token")
+    //   if (token != "") {
+    //     return this.$axios
+    //       .post("http://localhost:8080/contacts/rest/myservice/sendToken",{
+    //         "token": token
+    //       })
+    //       .then(response => response.data)
+    //       .catch(error => console.log(error))
+    //   }
+    // },
+    // getAllUsers() {
+    //   console.log('getUser() called');
+    //   var token = localStorage.getItem("token")
+    //   if (token != "") {
+    //     return this.$axios
+    //       .post("http://localhost:8080/contacts/rest/myservice/getAllUsers",{
+    //         "token": localStorage.getItem("token")
+    //       })
+    //       .then(response => response.data)
+    //       .catch(error => console.log(error))
+    //   }
+    // },
+    getPosts() {
+      console.log('app > getPosts() called');
+      this.axiosReq("http://localhost:8080/contacts/rest/myservice/getAllPosts", {
+        "token": localStorage.getItem("token")
+      }).then(data => {
+        if (data != null || data != "") {
+        let msg = JSON.parse(JSON.stringify(data))
+        if (msg.success) {
+          this.posts = msg.data.slice() //getting all posts and converting them to js array
+          console.log(this.posts);
+        } else {
+          alert(msg.message)
+          console.log(msg.message)
+        }
+      }
+      })
+    },
+    setUsers() {
+      console.log(app > serUser());
+      // this.$axios
+      //   .put(usersURL, this.users)
+      //   .then(response => (this.users = response.data))
+      //   .catch(error => console.log(error))
     },
     setAuthenticated(status) {
       this.authenticated = status;
     },
-    isInUsers() {
-      console.log('isInUsers() called');
-      //check if the user data already existed
-      let user = this.users.users;
-      for (let i = 0; i < this.users.users.length; i++) {
-        if (user[i].username == this.username && user[i].password == this.password) {
-          this.currentUser = user[i];
-          return true;
-        }
-      }
-      return false;
-    },
-    getUsers() {
-      console.log('getUser() called');
-      this.$axios
-        .get(usersURL)
-        .then(response => (this.users = response.data))
-        // .then(response => (console.log(response.data.users.length)))
-        .catch(error => console.log(error))
-    },
-
+    // isInUsers() {
+    //   console.log('isInUsers() called');
+    //   //check if the user data already existed
+    //   let user = this.users.users;
+    //   for (let i = 0; i < this.users.users.length; i++) {
+    //     if (user[i].username == this.username && user[i].password == this.password) {
+    //       this.currentUser = user[i];
+    //       return true;
+    //     }
+    //   }
+    //   return false;
+    // },
     // setActiveUsers(){
     //   var activeUsers = this.users.users.length;
     //   // console.log(this.users);
@@ -227,61 +270,61 @@ export default {
     //   // this.users = activeUsers;
     //   // console.log('this.users(after filtering) ====>'+this.users);
     // },
+    setPostsChange(post) {
+      console.log('App > setPostsChange() called');
+      this.axiosReq("http://localhost:8080/contacts/rest/myservice/managePosts ", post).then(data => {
 
-    getPosts() {
-      console.log('app > getPosts() called');
-      this.$axios
-        .get(reportURL)
-        .then(response => (this.posts = response.data))
-        .catch(error => console.log(error))
-    },
-    setPostsChange() {
-      console.log('App > setPost() called');
-      if (this.currentUser != '' && this.posts.reports != '') {
-        this.$axios
-          .put(reportURL, this.posts)
-          .then(response => (this.posts = response.data))
-          .catch(error => console.log(error))
-        console.log("PostsChange UPDATED => " + this.posts);
-      } else {
-        console.log("PostsChange *'NOT'* UPDATED " + (this.posts.reports != ''));
-      }
+
+          let msg = JSON.parse(JSON.stringify(data))
+          if (msg.success) {
+            console.log(post);
+            console.log(msg.data == null);
+          } else {
+            alert(msg.message)
+            console.log(msg.message)
+          }
+
+      })
     },
   },
-  // beforeDestroy(){
-  //   //sort by id 'users'
-  //   this.users.users.sort(function(a, b) {
-  //     if (a.id < b.id)
-  //       return -1;
-  //     if (a.id > b.id)
-  //       return 1;
-  //     return 0;
-  //   });
+  // beforeUpdate() {
+  //   console.log("App > beforeUpdate() called");
+  //   this.setPostsChange();
   // },
-  beforeUpdate() {
-    console.log("App > beforeUpdate() called");
-    this.setPostsChange();
-    // this.setUsers();
-  },
-  mounted() {
-    // updated() {
-    // updated() {
-    this.getPosts();
-    this.getUsers();
-    // this.setActiveUsers();
-    // console.log(this.users);
-
-  },
   beforeMount() {
-    if (!this.authenticated) {
-      // console.log("**** change this part to present");
-      this.$router.replace('/');
-      // this.$router.replace('/admin');
-    }
-    //
-    // this.setUsers();
-    // this.getUsers();
-    // this.getPosts();
+    this.axiosReq("http://localhost:8080/contacts/rest/myservice/sendToken", {
+      "token": localStorage.getItem("token")
+    }).then(data => {
+      this.currentUser = JSON.parse(JSON.stringify(data))
+      if (this.currentUser.success) {
+        this.authenticated = true;
+        if (this.currentUser.data.role == "admin") {
+          this.axiosReq("http://localhost:8080/contacts/rest/myservice/getAllUsers", {
+            "token": localStorage.getItem("token")
+          }).then(data2 => {
+            let msg = JSON.parse(JSON.stringify(data2))
+            if (msg.success) {
+              this.users = msg.data.slice() //getting all users and converting them to js array
+              console.log(this.users);
+            } else {
+              alert(msg.message)
+              console.log(msg.message)
+            }
+          })
+          this.$router.replace(`/admin`); // ****** admin ****** //
+        } else if (this.currentUser.data.role == "prof") {
+          this.$router.replace(`/management`); // ****** manager ****** //
+        } else {
+          this.$router.replace(`/report`); // ****** students ****** //
+        }
+      } else {
+        alert(this.currentUser.message)
+        console.log(this.currentUser.message);
+      }
+      if (!this.authenticated) {
+        this.$router.replace('/');
+      }
+    })
   },
   components: {
     'navbar-component': NavbarComponent,
@@ -289,7 +332,3 @@ export default {
   },
 }
 </script>
-
-<style>
-
-</style>

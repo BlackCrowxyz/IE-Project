@@ -29,73 +29,68 @@
 </template>
 
 <script>
+var loginURL = 'http://localhost:8080/contacts/rest/myservice/login';
+
 export default {
   name: 'login-component',
   data() {
     return {
       username: '',
       password: '',
-      user: '',
-      // posts:'',
     }
   },
   // mounted() {
   // updated() {
-  created() {
-    // console.log("34343434");
-    this.user = this.$parent.users.users
-    // this.posts = this.$parent.posts
-  },
+  // created() {
+  //   // console.log("34343434");
+  //   // this.user = this.$parent.users.users
+  //   // this.posts = this.$parent.posts
+  // },
   methods: {
+    axiosReq(){
+      //.then(response => (this.$parent.currentUser = response.data))
+      return this.$axios
+        .post(loginURL,{
+          "username": this.username,
+          "password": this.password
+        })
+        .then(response => response.data)
+        .catch(error => console.log(error))
+    },
     login() {
       console.log('SigninComponent > login() called');
-      //check if the user exists in the database
-      if (this.isInUsers()) {
-        this.$parent.authenticated = true;
 
-        // for (var i = 0; i < this.posts.reports.length; i++) {
-        //   if (this.posts.reports[i].email != this.$parent.currentUser.email) {
-        //     this.posts.reports.splice(i,1);
-        //   }
-        // }
-        // this.$parent.posts = this.posts;
-
-        if (this.$parent.currentUser.id == 1) {
-          // ****** admin ******
-          this.$router.replace(`/admin`);
-        } else if (this.$parent.currentUser.id == 2) {
-          // ****** staff ******
-          this.$router.replace(`/management`);
+      this.axiosReq().then(data => {
+        // this.user = JSON.parse(JSON.stringify(data))
+        let msg = JSON.parse(JSON.stringify(data))
+        if (typeof msg !== 'object' && !msg.success) {
+          alert("اشکال در ورود:\n" + msg.message)
+          console.log("اشکال در ورود:\n" + msg.message);
         } else {
-          // ****** students ******
-          this.$router.replace(`/report`);
-        }
-        this.username = '';
-        this.password = '';
-      }
-    },
-    isInUsers() {
-      console.log('SigninComponent > isInUsers() called');
-      for (let i = 0; i < this.user.length; i++) {
-        if (this.user[i].username == this.username && this.user[i].password == this.password) {
-          if (!this.user[i].isActive) {
-            // alert("this.user[i].isActive = "+this.user[i].isActive)
-            // alert("this.user[i].email = "+this.user[i].email)
-            alert("هنوز مدیر شما را تایید نکرده است.")
-            return false;
+          this.$parent.currentUser = msg.data;
+          this.$parent.authenticated = true;
+          localStorage.setItem("token", msg.data.token); //Saving to local Stroge
+          if (msg.data.role == "admin") {
+            // this.$parent.getAllUsers().then(data2 => {
+            //   let msg = JSON.parse(JSON.stringify(data2))
+            //   if (msg.success) {
+            //     this.$parent.users = msg.data.slice() //getting all users and converting them to js array
+            //   } else {
+            //     alert(msg.message)
+            //     console.log(msg.message)
+            //   }
+            // })
+            this.$router.replace(`/admin`);
+          } else if (msg.data.role == "prof") {
+            this.$router.replace(`/management`);
+          } else {
+            this.$router.replace(`/report`);
           }
-          this.$parent.currentUser = this.user[i];
-          return true;
+          this.username = '';
+          this.password = '';
         }
-      }
-      // alert("The Username and/or Password is incorrect!");
-      alert("نام کاربری یا رمز عبور اشتباه است!");
-      return false;
+      })
     },
   },
 }
 </script>
-
-<style>
-
-</style>
